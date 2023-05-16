@@ -14,10 +14,6 @@ use App\Http\Controllers\Auth\LoginController;
 |
 */
 
- 
-// Route::get('/', function () {
-//     return view('welcome');
-// });
 Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('show.home');
 Route::get('/welcome', [App\Http\Controllers\WelcomeController::class, 'index'])->name('show.welcome');
 
@@ -25,11 +21,6 @@ Route::get('/locale/{locale}', function ($locale) {
     \Session::put('locale', $locale);
     return redirect()->back();
 });
- 
-Route::get('/', function () {
-    return view('welcome');
-});
-
 
 // Registration Routes
 Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');

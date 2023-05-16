@@ -19,8 +19,8 @@
     {{-- <link rel="icon" href="{{ asset('img/favicon.ico') }}"> --}}
 
 
-    <script src="{{ asset('js/aos.js') }}"></script>
-    <script src="{{ asset('js/app.js') }}"></script>
+    {{-- <script src="{{ asset('js/aos.js') }}"></script>
+    <script src="{{ asset('js/app.js') }}"></script> --}}
 
 
     <!-- Fonts -->
