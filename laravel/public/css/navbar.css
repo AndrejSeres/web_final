@@ -1,0 +1,136 @@
+nav{
+  background-color: black !important;
+}
+
+.site-header {
+  background: transparent;
+  padding: 12px 5%;
+  /* box-shadow: 0px 0px 12px 0px rgba(0, 0, 0, 0.23);*/
+  transition: all 0.25s linear;
+  -web-kit-position: sticky;
+  position: sticky;
+  top: 0;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+  -ms-flex-direction: row;
+  flex-direction: row;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  z-index: 1001;
+}
+
+.site-header .nav-link {
+  color: white;
+}
+
+.site-header nav {
+  text-align: right;
+  -webkit-box-flex: 1;
+  -ms-flex-positive: 1;
+  flex-grow: 1;
+  -ms-flex-preferred-size: 0;
+  flex-basis: 0;
+}
+
+.site-header.is-scrolling {
+  box-shadow: 0px 0px 12px 0px rgba(0, 0, 0, 0.23);
+  opacity: 1;
+  background: #fff;
+  padding: 10px 5%;
+}
+
+.site-header.is-scrolling .nav-link {
+  color: #1772BD;
+}
+
+#header {
+  /*height: 92.5vh;*/
+  width: 100%;
+}
+
+nav.navbar {
+  padding: 0.5rem 0
+}
+
+.nav-link {
+  text-align: center;
+  padding-bottom: 0.2rem !important;
+}
+
+.site-header .navbar-brand {
+  width: 15%;
+}
+
+.site-header .nav-item {
+  font-size: calc(0.35rem + 1vmin);
+  padding-left: 0.35rem;
+  padding-right: 0.35rem;
+}
+
+.site-header .nav-icon,
+.site-header .nav-icon-scrolling {
+  height: 1.75rem;
+}
+
+.site-header .nav-icon,
+.site-header .logo {
+  display: block;
+}
+
+.site-header .nav-icon-scrolling,
+.site-header .logo-scrolling {
+  display: none;
+}
+
+.site-header.is-scrolling .nav-icon,
+.site-header.is-scrolling .logo {
+  display: none;
+}
+
+.site-header.is-scrolling .nav-icon-scrolling,
+.site-header.is-scrolling .logo-scrolling {
+  display: block;
+}
+
+.navbar-toggler-icon {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28 23, 114, 189, 1 %29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+}
+
+.navbar-toggler:after,
+.navbar-toggler:focus,
+.navbar-toggler:active {
+  outline: none;
+}
+
+.site-header .nav-line {
+  width: 4rem;
+  height: 0.125rem;
+  background-color: transparent;
+  align-self: center;
+  margin: auto;
+  transition: all 0.5s linear;
+  border-top-left-radius: 0.25rem;
+  border-top-right-radius: 0.25rem;
+}
+
+.site-header .nav-item:hover .nav-line {
+  background-color: white;
+  transition: all 0.25s linear;
+}
+
+.site-header.is-scrolling .nav-item:hover .nav-line {
+  background-color: #1772BD;
+  transition: all 0.25s linear;
+}
+
+.site-header .nav-item:hover .nav-line.yellow {
+  background-color: #CEA600;
+  transition: all 0.25s linear;
+}
