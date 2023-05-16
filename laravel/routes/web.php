@@ -14,7 +14,7 @@ use App\Http\Controllers\Auth\LoginController;
 |
 */
 
- 
+
 // Route::get('/', function () {
 //     return view('welcome');
 // });
@@ -25,10 +25,10 @@ Route::get('/locale/{locale}', function ($locale) {
     \Session::put('locale', $locale);
     return redirect()->back();
 });
- 
-Route::get('/', function () {
-    return view('welcome');
-});
+
+// Route::get('/', function () {
+//     return view('welcome');
+// });
 
 
 // Registration Routes
@@ -43,4 +43,3 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
- 
