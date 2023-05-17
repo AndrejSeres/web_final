@@ -1,9 +1,6 @@
 @extends('layouts.app')
 
 @section('content')
-    <header class="site-header">
-        @include('layouts.nav')
-    </header>
     <main>
         <section>
             <div class="container">
@@ -13,16 +10,15 @@
                     </div>
                 </div>
             </div>
+            
         </section>
     </main>
-    <footer>
-    </footer>
 
     <div class="container">
         <div class="row justify-content-center">
             <div> <!-- Adjusted col-md-10 class -->
                 <div class="card">
-                    <div class="card-header">{{ __('Dashboard') }}</div>
+                    <div class="card-header">{{ __('home.dashboard') }}</div>
 
                     <div class="card-body">
                         @if (session('status'))
@@ -35,7 +31,7 @@
 
                         @auth
                             <div>
-                                Current User: {{ auth()->user()->name }}
+                                {{ __('home.current-user') }} {{ auth()->user()->name }}
                             </div>
 
                             @if (auth()->user()->role === 'teacher')
@@ -44,7 +40,7 @@
                                 </div>
                             @else
                                 <div>
-                                    <button id="generate-tasks-button" class="btn btn-primary">Generate Tasks</button>
+                                    <button id="generate-tasks-button" class="btn btn-primary">{{ __('home.generate') }}</button>
                                 </div>
                                 <div id="task-container" class="mt-3"></div>
                             @endif
@@ -93,7 +89,7 @@
                             <img src="${task.image}" alt="Task Image" style="max-width: 100%; height: auto;">
                         </div>
                         <div class="form-group">
-                            <label for="solution_${task.id}">Solution</label>
+                            <label for="solution_${task.id}">{{ __('home.solution') }}</label>
                             <input type="text" class="form-control" id="solution_${task.id}">
                         </div>
                     `;
