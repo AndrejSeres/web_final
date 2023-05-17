@@ -27,70 +27,56 @@ class LatexController extends Controller
         $latexFilesPath = public_path('/mathExamples/latex');
         $files = scandir($latexFilesPath);
 
-       // $tasks;
-
         foreach ($files as $file) {
             if ($file !== '.' && $file !== '..') {
                 $filePath = $latexFilesPath . '/' . $file;
-
-                /* Parsing from LateX */
                 $latexContent = file_get_contents($filePath);
 
-                /*  Echo   */
-                // var_dump($latexContent);
+                if (strpos($file, 'blokovka') !== false) {
+                    preg_match_all('/\\\\section\*?\{(.*?)\}/s', $latexContent, $matchesName);
+                    $sectionNames = $matchesName[1];
 
-                /*  Parsing section name    */
-                preg_match_all('/\\\\section\*?\{(.*?)\}/s', $latexContent, $matchesName);
-                $sectionNames = $matchesName[1];
+                    preg_match_all('/\$(.*?)\$/s', $latexContent, $matchesFormula);
+                    $formulas = $matchesFormula[1];
 
-                /*  Parsing Formula     */
-                preg_match_all('/\$(.*?)\$/s', $latexContent, $matchesFormula);
-                $formulas = $matchesFormula[1];
+                    $pattern = '/begin\{task\}(.*?)\\\\includegraphics/s';
+                    preg_match_all($pattern, $latexContent, $matches);
+                    $pattern = '/\$.*?\$/s';
+                    $cleanedDescriptions = preg_replace($pattern, '', $matches[1]);
 
-                /*
-                 *  Parsing task description, works only for first two files
-                 */
-                $pattern = '/begin\{task\}(.*?)\\\\includegraphics/s';
-                preg_match_all($pattern, $latexContent, $matches);
-                $pattern = '/\$.*?\$/s';
-                $cleanedDescriptions = preg_replace($pattern, '', $matches[1]);
+                    $pattern = '/\\\\begin{equation\*}([\s\S]*?)\\\\end{equation\*}/';
+                    preg_match_all($pattern, $latexContent, $matchesSolutions);
+                    $solutions = $matchesSolutions[1];
 
+                    preg_match_all('/\\\\includegraphics\{(.*?)\}/', $latexContent, $matchesImages);
+                    $imageFilenames = $matchesImages[1];
+                    var_dump($imageFilenames);
 
-                /*  Parsing solution  */
-                $pattern = '/\\\\begin{equation\*}([\s\S]*?)\\\\end{equation\*}/';
-                preg_match_all($pattern, $latexContent, $matchesSolutions);
-                $solutions = $matchesSolutions[1];
+                    for ($i = 0; $i < count($sectionNames); $i++) {
+                        $description = isset($cleanedDescriptions[$i]) ? trim(str_replace('\\', '', $cleanedDescriptions[$i])) : null;
+                        $task = new Task([
+                            'name' => $sectionNames[$i],
+                            'formula' => isset($formulas[$i]) ? '$$' . $formulas[$i] . '$$' : null,
+                            'description' => $description ?? null,
+                            'solution' => $solutions[$i] ?? null,
+                        ]);
 
-                // var_dump($solutions);
+                        if (isset($imageFilenames[$i])) {
+                            $imagePath = $imageFilenames[$i];
 
+                            // Extract the text after the last slash
+                            $imageName = substr($imagePath, strrpos($imagePath, '/') + 1);
 
-//                for ($i = 0; $i < count($sectionNames); $i++) {
-//                    $task = [
-//                        'name' => $sectionNames[$i],
-//                    ];
-//                    if (!empty($formulas[$i])) {
-//                        $task['formula'] = $formulas[$i];
-//                    }
-//                    if (!empty($cleanedDescriptions[$i])) {
-//                        $task['description'] = $cleanedDescriptions[$i];
-//                    }
-//                    if (!empty($solutions[$i])) {
-//                        $task['solution'] = $solutions[$i];
-//                    }
-//                    $parsedData[] = $task;
-//                }
+                            // Set the image path for the task
+                            $task->image = '/mathExamples/images/' . $imageName;
+                        }
 
-                for ($i = 0; $i < count($sectionNames); $i++) {
-                    $task = new Task([
-                        'name' => $sectionNames[$i],
-                        'formula' => $formulas[$i] ?? null,
-                        'description' => $cleanedDescriptions[$i] ?? null,
-                        'solution' => $solutions[$i] ?? null,
-                    ]);
+                        $task->save();
+                    }
 
-                    $task->save();
+                } elseif (strpos($file, 'odozva') !== false) {
+
                 }
-
             }
         }
 
@@ -99,9 +85,12 @@ class LatexController extends Controller
     }
 
 
+
     public function generateTasks()
     {
+
         $tasks = Task::inRandomOrder()->limit(5)->get();
+
         return response()->json($tasks);
     }
 }
