@@ -29,11 +29,11 @@ Route::get('/locale/{locale}', function ($locale) {
 
 
 
-/*  
+/*
 *  Route for GET request controller
 */
 // Route::get('/parsed-data', 'LatexController@getParsedData');
-Route::get('/parsed-data', [LatexController::class, 'getParsedData']);
+Route::get('/parsed-data', [LatexController::class, 'saveParsedData']);
 
 
 // Registration Routes

@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Task;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class LatexController extends Controller
 {
@@ -18,8 +20,9 @@ class LatexController extends Controller
          *    ]
          */
 
-    public function getParsedData()
+    public function saveParsedData()
     {
+        DB::table('tasks')->truncate();
         $parsedData = [];
         $latexFilesPath = public_path('/mathExamples/latex');
         $files = scandir($latexFilesPath);
@@ -61,20 +64,31 @@ class LatexController extends Controller
                 // var_dump($solutions);
 
 
+//                for ($i = 0; $i < count($sectionNames); $i++) {
+//                    $task = [
+//                        'name' => $sectionNames[$i],
+//                    ];
+//                    if (!empty($formulas[$i])) {
+//                        $task['formula'] = $formulas[$i];
+//                    }
+//                    if (!empty($cleanedDescriptions[$i])) {
+//                        $task['description'] = $cleanedDescriptions[$i];
+//                    }
+//                    if (!empty($solutions[$i])) {
+//                        $task['solution'] = $solutions[$i];
+//                    }
+//                    $parsedData[] = $task;
+//                }
+
                 for ($i = 0; $i < count($sectionNames); $i++) {
-                    $task = [
+                    $task = new Task([
                         'name' => $sectionNames[$i],
-                    ];
-                    if (!empty($formulas[$i])) {
-                        $task['formula'] = $formulas[$i];
-                    }
-                    if (!empty($cleanedDescriptions[$i])) {
-                        $task['description'] = $cleanedDescriptions[$i];
-                    }
-                    if (!empty($solutions[$i])) {
-                        $task['solution'] = $solutions[$i];
-                    }
-                    $parsedData[] = $task;
+                        'formula' => $formulas[$i] ?? null,
+                        'description' => $cleanedDescriptions[$i] ?? null,
+                        'solution' => $solutions[$i] ?? null,
+                    ]);
+
+                    $task->save();
                 }
 
             }
