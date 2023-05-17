@@ -16,3 +16,14 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
+
+/*  
+*  Route for GET request controller
+*/
+// Route::get('/parsed-data', 'LatexController@getParsedData');
+
+use App\Http\Controllers\LatexController;
+
+Route::get('/parsed-data', [LatexController::class, 'getParsedData']);
+
