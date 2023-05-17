@@ -23,7 +23,7 @@ return [
     |--------------------------------------------------------------------------
     |
     | This option determines where all the compiled Blade templates will be
-    | stored for your application. Typically, this is within the storage
+    | stored for yours application. Typically, this is within the storage
     | directory. However, as usual, you are free to change this value.
     |
     */
