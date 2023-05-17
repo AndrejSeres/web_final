@@ -36,13 +36,12 @@
                         @endif
 
                         {{ __('home.logged-in') }}
+                        @auth
+                            Rola: {{ auth()->user()->role }}
+                        @endauth
                     </div>
 
-                    @auth
-                        <div>
-                            Rola: {{ auth()->user()->role }}
-                        </div>
-                    @endauth
+
                 </div>
             </div>
         </div>
