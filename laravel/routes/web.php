@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\LatexController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -26,9 +27,13 @@ Route::get('/locale/{locale}', function ($locale) {
     return redirect()->back();
 });
 
-// Route::get('/', function () {
-//     return view('welcome');
-// });
+
+
+/*  
+*  Route for GET request controller
+*/
+// Route::get('/parsed-data', 'LatexController@getParsedData');
+Route::get('/parsed-data', [LatexController::class, 'getParsedData']);
 
 
 // Registration Routes
@@ -43,3 +48,4 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
