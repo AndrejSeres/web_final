@@ -10,21 +10,21 @@ class LatexController extends Controller
 
         /*              EXAMPLE of data representation
          *   Object[0]
-         *    [ 
+         *    [
          *       'name' -> 'B34A5A',
          *       'formula' -> 'F(s)=\\dfrac{Y(s)}{W(s)}',
          *       'description' -> 'Nájdite prenosovú funkciu  pre systém opísaný blokovou schémou:',
          *       'solution' -> '\dfrac{2s^2+13s+10}{s^3+7s^2+18s+15}'
          *    ]
          */
- 
+
     public function getParsedData()
     {
         $parsedData = [];
         $latexFilesPath = public_path('/mathExamples/latex');
         $files = scandir($latexFilesPath);
 
-        $tasks;
+       // $tasks;
 
         foreach ($files as $file) {
             if ($file !== '.' && $file !== '..') {
@@ -39,12 +39,12 @@ class LatexController extends Controller
                 /*  Parsing section name    */
                 preg_match_all('/\\\\section\*?\{(.*?)\}/s', $latexContent, $matchesName);
                 $sectionNames = $matchesName[1];
-        
+
                 /*  Parsing Formula     */
                 preg_match_all('/\$(.*?)\$/s', $latexContent, $matchesFormula);
-                $formulas = $matchesFormula[1]; 
+                $formulas = $matchesFormula[1];
 
-                /* 
+                /*
                  *  Parsing task description, works only for first two files
                  */
                 $pattern = '/begin\{task\}(.*?)\\\\includegraphics/s';
@@ -59,8 +59,8 @@ class LatexController extends Controller
                 $solutions = $matchesSolutions[1];
 
                 // var_dump($solutions);
-                
-            
+
+
                 for ($i = 0; $i < count($sectionNames); $i++) {
                     $task = [
                         'name' => $sectionNames[$i],
@@ -76,10 +76,10 @@ class LatexController extends Controller
                     }
                     $parsedData[] = $task;
                 }
-                
+
             }
         }
-        
+
         $json = json_encode($parsedData, JSON_UNESCAPED_UNICODE);
         return response($json)->header('Content-Type', 'application/json');
     }
