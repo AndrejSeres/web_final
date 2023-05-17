@@ -34,6 +34,7 @@ Route::get('/locale/{locale}', function ($locale) {
 */
 // Route::get('/parsed-data', 'LatexController@getParsedData');
 Route::get('/parsed-data', [LatexController::class, 'saveParsedData']);
+Route::get('/generate-tasks', [LatexController::class, 'generateTasks']);
 
 
 // Registration Routes

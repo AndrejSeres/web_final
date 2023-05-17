@@ -97,4 +97,11 @@ class LatexController extends Controller
         $json = json_encode($parsedData, JSON_UNESCAPED_UNICODE);
         return response($json)->header('Content-Type', 'application/json');
     }
+
+
+    public function generateTasks()
+    {
+        $tasks = Task::inRandomOrder()->limit(5)->get();
+        return response()->json($tasks);
+    }
 }
