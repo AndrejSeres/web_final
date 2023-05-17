@@ -37,6 +37,12 @@
 
                         {{ __('home.logged-in') }}
                     </div>
+
+                    @auth
+                        <div>
+                            Rola: {{ auth()->user()->role }}
+                        </div>
+                    @endauth
                 </div>
             </div>
         </div>
