@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Task;
 use App\Models\UserTask;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class LatexController extends Controller
@@ -96,8 +97,18 @@ class LatexController extends Controller
 
     public function generateTasks()
     {
-
         $tasks = Task::inRandomOrder()->limit(5)->get();
+        $user = Auth::user();
+
+        foreach ($tasks as $task) {
+            UserTask::create([
+                'user_id' => $user->id,
+                'task_id' => $task->id,
+                'state' => 'generated',
+                'points' => 0,
+                'solution' => null,
+            ]);
+        }
 
         return response()->json($tasks);
     }
