@@ -8,5 +8,7 @@ return [
     'solution' => 'Riešenie',
     'generate' => 'Zobraziť zadanie',
     'dashboard' => 'Nástenka',
+    'points' => 'Body za úlohu: ',
+    'show-btn' => 'Zobraziť študentov',
 
 ];
