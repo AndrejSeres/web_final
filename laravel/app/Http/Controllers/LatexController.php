@@ -47,10 +47,13 @@ class LatexController extends Controller
                     $pattern = '/\\\\begin{equation\*}([\s\S]*?)\\\\end{equation\*}/';
                     preg_match_all($pattern, $latexContent, $matchesSolutions);
                     $solutions = $matchesSolutions[1];
+                    $solutions = array_map(function ($solution) {
+                        $solution = trim($solution); 
+                        $solution = preg_replace('/\s+/', ' ', $solution); 
+                    }, $solutions);
 
                     preg_match_all('/\\\\includegraphics\{(.*?)\}/', $latexContent, $matchesImages);
                     $imageFilenames = $matchesImages[1];
-                    var_dump($imageFilenames);
 
                     for ($i = 0; $i < count($sectionNames); $i++) {
                         $description = isset($cleanedDescriptions[$i]) ? trim(str_replace('\\', '', $cleanedDescriptions[$i])) : null;
@@ -76,6 +79,62 @@ class LatexController extends Controller
 
                 } elseif (strpos($file, 'odozva') !== false) {
 
+                    preg_match_all('/\\\\section\*?\{(.*?)\}/s', $latexContent, $matchesName);
+                    $sectionNames = $matchesName[1];
+                   
+                    $pattern = '/\\\\begin\{equation\*\}(.*?)\\\\end\{equation\*\}/s';
+                    preg_match_all($pattern, $latexContent, $matches);
+                    $formulas = $matches[1];
+                    $formulas = array_map(function ($formula) {
+                        $formula = trim($formula); 
+                        $formula = str_replace('\n', '', $formula); 
+                        $formula = preg_replace('/\s+/', ' ', $formula); 
+                        return $formula;
+                    }, $formulas);
+                
+
+                    $pattern = '/\\\\begin\{task\}(.*?)\\\\begin\{equation\*\}/s';
+                    preg_match_all($pattern, $latexContent, $matches);
+                    $cleanedDescriptions = array_map(function ($match) {
+                        return preg_replace('/\$.*?\$/s', '', $match);
+                    }, $matches[1]);
+
+
+                    $pattern = '/\\\\begin{equation\*}([\s\S]*?)\\\\end{equation\*}/';
+                    preg_match_all($pattern, $latexContent, $matchesSolutions);
+                    $solutions = $matchesSolutions[1];
+                    $solutions = array_map(function ($solution) {
+                        $solution = trim($solution); 
+                        $solution = preg_replace('/\s+/', ' ', $solution); 
+                        return $solution;
+                    }, $solutions);
+                    
+
+                    preg_match_all('/\\\\includegraphics\{(.*?)\}/', $latexContent, $matchesImages);
+                    $imageFilenames = $matchesImages[1];
+
+                    for ($i = 0; $i < count($sectionNames); $i++) {
+                        $description = isset($cleanedDescriptions[$i]) ? trim(str_replace('\\', '', $cleanedDescriptions[$i])) : null;
+                        $task = new Task([
+                            'name' => $sectionNames[$i],
+                            'formula' => isset($formulas[$i]) ? '$$' . $formulas[$i] . '$$' : null,
+                            'description' => $description ?? null,
+                            'solution' => $solutions[$i] ?? null,
+                        ]);
+
+                        if (isset($imageFilenames[$i])) {
+                            $imagePath = $imageFilenames[$i];
+
+                            // Extract the text after the last slash
+                            $imageName = substr($imagePath, strrpos($imagePath, '/') + 1);
+
+                            // Set the image path for the task
+                            $task->image = '/mathExamples/images/' . $imageName;
+                        }
+
+                        $task->save();
+                
+                    }
                 }
             }
         }
@@ -83,7 +142,6 @@ class LatexController extends Controller
         $json = json_encode($parsedData, JSON_UNESCAPED_UNICODE);
         return response($json)->header('Content-Type', 'application/json');
     }
-
 
 
     public function generateTasks()
