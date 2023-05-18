@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\LatexController;
+use App\Http\Controllers\StudentController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -35,6 +36,8 @@ Route::get('/locale/{locale}', function ($locale) {
 // Route::get('/parsed-data', 'LatexController@getParsedData');
 Route::get('/parsed-data', [LatexController::class, 'saveParsedData']);
 Route::get('/generate-tasks', [LatexController::class, 'generateTasks']);
+Route::get('/show-students', [StudentController::class, 'index']);
+
 
 
 // Registration Routes

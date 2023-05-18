@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Task;
+use App\Models\UserTask;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class LatexController extends Controller
@@ -22,12 +24,15 @@ class LatexController extends Controller
 
     public function saveParsedData()
     {
-        DB::table('tasks')->truncate();
+        /* Writes out tasks on page -> http://127.0.0.1:8000/parsed-data */
+        $writeOnPage = true;
+
         $parsedData = [];
         $latexFilesPath = public_path('/mathExamples/latex');
         $files = scandir($latexFilesPath);
-
+        $setId = 0;
         foreach ($files as $file) {
+            $setId++;
             if ($file !== '.' && $file !== '..') {
                 $filePath = $latexFilesPath . '/' . $file;
                 $latexContent = file_get_contents($filePath);
@@ -62,6 +67,76 @@ class LatexController extends Controller
                             'formula' => isset($formulas[$i]) ? '$$' . $formulas[$i] . '$$' : null,
                             'description' => $description ?? null,
                             'solution' => $solutions[$i] ?? null,
+                            'points' => '5',
+                            'setId' => $setId
+                        ]);
+
+                        if (isset($imageFilenames[$i])) {
+                            $imagePath = $imageFilenames[$i];
+
+                            $imageName = substr($imagePath, strrpos($imagePath, '/') + 1);
+
+                            $task->image = '/mathExamples/images/' . $imageName;
+                        }
+
+                        $existingTask = Task::where('name', $task['name'])
+                            ->where('id', $task['setId'])
+                            ->first();
+
+                        if (!$existingTask) {
+                            $task->save();
+                            if($writeOnPage){
+                                echo $task;
+                                echo "\n\n";
+                            }
+                        }
+
+                    }
+
+                } elseif (strpos($file, 'odozva') !== false) {
+                    preg_match_all('/\\\\section\*?\{(.*?)\}/s', $latexContent, $matchesName);
+                    $sectionNames = $matchesName[1];
+                   
+                    $pattern = '/\\\\begin\{equation\*\}(.*?)\\\\end\{equation\*\}/s';
+                    preg_match_all($pattern, $latexContent, $matches);
+                    $formulas = $matches[1];
+                    $formulas = array_map(function ($formula) {
+                        $formula = trim($formula); 
+                        $formula = str_replace('\n', '', $formula); 
+                        $formula = preg_replace('/\s+/', ' ', $formula); 
+                        return $formula;
+                    }, $formulas);
+                
+
+                    $pattern = '/\\\\begin\{task\}(.*?)\\\\begin\{equation\*\}/s';
+                    preg_match_all($pattern, $latexContent, $matches);
+                    $cleanedDescriptions = array_map(function ($match) {
+                        return preg_replace('/\$.*?\$/s', '', $match);
+                    }, $matches[1]);
+
+
+                    $pattern = '/\\\\begin{equation\*}([\s\S]*?)\\\\end{equation\*}/';
+                    preg_match_all($pattern, $latexContent, $matchesSolutions);
+                    $solutions = $matchesSolutions[1];
+                    $solutions = array_map(function ($solution) {
+                        $solution = trim($solution); 
+                        $solution = preg_replace('/\s+/', ' ', $solution); 
+                        return $solution;
+                    }, $solutions);
+                    
+
+                    preg_match_all('/\\\\includegraphics\{(.*?)\}/', $latexContent, $matchesImages);
+                    $imageFilenames = $matchesImages[1];
+
+                    for ($i = 0; $i < count($sectionNames); $i++) {
+                        $description = isset($cleanedDescriptions[$i]) ? trim(str_replace('\\', '', $cleanedDescriptions[$i])) : null;
+                        $task = new Task([
+                            'name' => $sectionNames[$i],
+                            'formula' => isset($formulas[$i]) ? '$$' . $formulas[$i] . '$$' : null,
+                            'description' => $description ?? null,
+                            'solution' => $solutions[$i] ?? null,
+                            'points' => '5',
+                            'setId' => $setId
                         ]);
 
                         if (isset($imageFilenames[$i])) {
@@ -74,10 +149,19 @@ class LatexController extends Controller
                             $task->image = '/mathExamples/images/' . $imageName;
                         }
 
-                        $task->save();
-                    }
+                        $existingTask = Task::where('name', $task['name'])
+                            ->where('id', $task['setId'])
+                            ->first();
 
-                } elseif (strpos($file, 'odozva') !== false) {
+                        if (!$existingTask) {
+                            $task->save();
+                            if($writeOnPage){
+                                echo $task;
+                                echo "\n\n";
+                            }
+                        }
+                
+                    }
 
                     preg_match_all('/\\\\section\*?\{(.*?)\}/s', $latexContent, $matchesName);
                     $sectionNames = $matchesName[1];
@@ -146,9 +230,20 @@ class LatexController extends Controller
 
     public function generateTasks()
     {
-
         $tasks = Task::inRandomOrder()->limit(5)->get();
+        $user = Auth::user();
+
+        foreach ($tasks as $task) {
+            UserTask::create([
+                'user_id' => $user->id,
+                'task_id' => $task->id,
+                'state' => 'generated',
+                'points' => 0,
+                'solution' => null,
+            ]);
+        }
 
         return response()->json($tasks);
     }
 }
+

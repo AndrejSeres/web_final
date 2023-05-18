@@ -1,28 +1,24 @@
 @extends('layouts.app')
 
 @section('content')
-    <header class="site-header">
-        @include('layouts.nav')
-    </header>
     <main>
         <section>
             <div class="container">
                 <div class="row">
-                    <div class="col-md-12 mt-md-5 mb-md-5">
+                    <div class="mt-md-5 mb-md-5">
                         <h3 class="mb-5 mt-5">{{ __('home.welcome') }}</h3>
                     </div>
                 </div>
             </div>
+            
         </section>
     </main>
-    <footer>
-    </footer>
 
     <div class="container">
         <div class="row justify-content-center">
-            <div class="col-md-8">
+            <div> <!-- Adjusted col-md-10 class -->
                 <div class="card">
-                    <div class="card-header">{{ __('Dashboard') }}</div>
+                    <div class="card-header">{{ __('home.dashboard') }}</div>
 
                     <div class="card-body">
                         @if (session('status'))
@@ -35,16 +31,18 @@
 
                         @auth
                             <div>
-                                Current User: {{ auth()->user()->name }}
+                                {{ __('home.current-user') }} {{ auth()->user()->name }}
                             </div>
 
                             @if (auth()->user()->role === 'teacher')
                                 <div>
                                     Teacher options
+                                    <button id="show-students-button" class="btn btn-primary">{{ __('home.show-btn') }}</button>
+                                    <div id="table-container" class="mt-3"></div>
                                 </div>
                             @else
                                 <div>
-                                    <button id="generate-tasks-button" class="btn btn-primary">Generate Tasks</button>
+                                    <button id="generate-tasks-button" class="btn btn-primary">{{ __('home.generate') }}</button>
                                 </div>
                                 <div id="task-container" class="mt-3"></div>
                             @endif
@@ -55,7 +53,8 @@
         </div>
     </div>
 
-    <script>
+
+<script>
         // JavaScript code to handle the task generation and display
 
         // Get the generate tasks button
@@ -88,10 +87,19 @@
                         <h5 class="card-title">${task.name}</h5>
                         <p class="card-text">${task.description}</p>
                         <p class="card-text">${task.formula}</p>
+                        <div class="card-img text-center">
+                            <img src="${task.image}" alt="Task Image" style="max-width: 100%; height: auto;">
+                        </div>
                         <div class="form-group">
-                            <label for="solution_${task.id}">Solution</label>
+                            <label for="solution_${task.id}">{{ __('home.solution') }}</label>
                             <input type="text" class="form-control" id="solution_${task.id}">
-                        `;
+                        </div>
+                        <div class="form-group">
+                            <label>{{ __('home.points') }}${task.points}</label>
+                        </div>
+                    `;
+
+
 
                         // Append the card body to the task card
                         taskCard.appendChild(cardBody);
@@ -114,6 +122,73 @@
                 });
         });
     </script>
+
+    <script>
+    // JavaScript to show all students to the teacher
+
+    // Function to display the students in the table
+    function displayStudents(students) {
+        // Get the table container element
+        const tableContainer = document.getElementById('table-container');
+
+        // Create the table element
+        const table = document.createElement('table');
+        table.classList.add('table');
+
+        // Create the table body
+        const tableBody = document.createElement('tbody');
+
+        // Loop through the students and create table rows
+        students.forEach(student => {
+            // Create a table row
+            const row = document.createElement('tr');
+
+            // Create table cells for id, name, and email
+            const idCell = document.createElement('td');
+            idCell.textContent = student.id;
+
+            const nameCell = document.createElement('td');
+            nameCell.textContent = student.name;
+
+            const emailCell = document.createElement('td');
+            emailCell.textContent = student.email;
+
+            // Append the cells to the row
+            row.appendChild(idCell);
+            row.appendChild(nameCell);
+            row.appendChild(emailCell);
+
+            // Append the row to the table body
+            tableBody.appendChild(row);
+        });
+
+        // Append the table body to the table
+        table.appendChild(tableBody);
+
+        // Clear the table container
+        tableContainer.innerHTML = '';
+
+        // Append the table to the table container
+        tableContainer.appendChild(table);
+    }
+
+    // Get the show table button and attach the click event listener
+    const showStudentsButton = document.getElementById('show-students-button');
+    showStudentsButton.addEventListener('click', () => {
+        // Make an AJAX request to fetch the students
+        fetch('/show-students')
+            .then(response => response.json())
+            .then(students => {
+                // Call the function to display the students in the table
+                displayStudents(students);
+            })
+            .catch(error => {
+                console.error('Error fetching students:', error);
+            });
+    });
+</script>
+
+
 
 
 @endsection
