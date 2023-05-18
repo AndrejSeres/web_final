@@ -8,5 +8,7 @@ return [
     'solution' => 'Solution',
     'generate' => 'Show tasks',
     'dashboard' => 'Dashboard',
+    'points' => 'Points: ',
+    'show-btn' => 'Show students',
 
 ];

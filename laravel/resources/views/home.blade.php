@@ -37,6 +37,8 @@
                             @if (auth()->user()->role === 'teacher')
                                 <div>
                                     Teacher options
+                                    <button id="show-students-button" class="btn btn-primary">{{ __('home.show-btn') }}</button>
+                                    <div id="table-container" class="mt-3"></div>
                                 </div>
                             @else
                                 <div>
@@ -92,6 +94,9 @@
                             <label for="solution_${task.id}">{{ __('home.solution') }}</label>
                             <input type="text" class="form-control" id="solution_${task.id}">
                         </div>
+                        <div class="form-group">
+                            <label>{{ __('home.points') }}${task.points}</label>
+                        </div>
                     `;
 
 
@@ -117,5 +122,73 @@
                 });
         });
     </script>
+
+    <script>
+    // JavaScript to show all students to the teacher
+
+    // Function to display the students in the table
+    function displayStudents(students) {
+        // Get the table container element
+        const tableContainer = document.getElementById('table-container');
+
+        // Create the table element
+        const table = document.createElement('table');
+        table.classList.add('table');
+
+        // Create the table body
+        const tableBody = document.createElement('tbody');
+
+        // Loop through the students and create table rows
+        students.forEach(student => {
+            // Create a table row
+            const row = document.createElement('tr');
+
+            // Create table cells for id, name, and email
+            const idCell = document.createElement('td');
+            idCell.textContent = student.id;
+
+            const nameCell = document.createElement('td');
+            nameCell.textContent = student.name;
+
+            const emailCell = document.createElement('td');
+            emailCell.textContent = student.email;
+
+            // Append the cells to the row
+            row.appendChild(idCell);
+            row.appendChild(nameCell);
+            row.appendChild(emailCell);
+
+            // Append the row to the table body
+            tableBody.appendChild(row);
+        });
+
+        // Append the table body to the table
+        table.appendChild(tableBody);
+
+        // Clear the table container
+        tableContainer.innerHTML = '';
+
+        // Append the table to the table container
+        tableContainer.appendChild(table);
+    }
+
+    // Get the show table button and attach the click event listener
+    const showStudentsButton = document.getElementById('show-students-button');
+    showStudentsButton.addEventListener('click', () => {
+        // Make an AJAX request to fetch the students
+        fetch('/show-students')
+            .then(response => response.json())
+            .then(students => {
+                // Call the function to display the students in the table
+                displayStudents(students);
+            })
+            .catch(error => {
+                console.error('Error fetching students:', error);
+            });
+    });
+</script>
+
+
+
 
 @endsection

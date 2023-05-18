@@ -59,6 +59,7 @@ class LatexController extends Controller
                             'formula' => isset($formulas[$i]) ? '$$' . $formulas[$i] . '$$' : null,
                             'description' => $description ?? null,
                             'solution' => $solutions[$i] ?? null,
+                            'points' => '5',
                         ]);
 
                         if (isset($imageFilenames[$i])) {
