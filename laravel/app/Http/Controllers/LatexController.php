@@ -27,13 +27,14 @@ class LatexController extends Controller
         $parsedData = [];
         $latexFilesPath = public_path('/mathExamples/latex');
         $files = scandir($latexFilesPath);
+
         $setId = 0;
         foreach ($files as $file) {
-            $setId++;
+
             if ($file !== '.' && $file !== '..') {
                 $filePath = $latexFilesPath . '/' . $file;
                 $latexContent = file_get_contents($filePath);
-
+                $setId++;
                 if (strpos($file, 'blokovka') !== false) {
                     preg_match_all('/\\\\section\*?\{(.*?)\}/s', $latexContent, $matchesName);
                     $sectionNames = $matchesName[1];
@@ -50,8 +51,8 @@ class LatexController extends Controller
                     preg_match_all($pattern, $latexContent, $matchesSolutions);
                     $solutions = $matchesSolutions[1];
                     $solutions = array_map(function ($solution) {
-                        $solution = trim($solution); 
-                        $solution = preg_replace('/\s+/', ' ', $solution); 
+                        $solution = trim($solution);
+                        $solution = preg_replace('/\s+/', ' ', $solution);
                     }, $solutions);
 
                     preg_match_all('/\\\\includegraphics\{(.*?)\}/', $latexContent, $matchesImages);
@@ -90,17 +91,17 @@ class LatexController extends Controller
                 } elseif (strpos($file, 'odozva') !== false) {
                     preg_match_all('/\\\\section\*?\{(.*?)\}/s', $latexContent, $matchesName);
                     $sectionNames = $matchesName[1];
-                   
+
                     $pattern = '/\\\\begin\{equation\*\}(.*?)\\\\end\{equation\*\}/s';
                     preg_match_all($pattern, $latexContent, $matches);
                     $formulas = $matches[1];
                     $formulas = array_map(function ($formula) {
-                        $formula = trim($formula); 
-                        $formula = str_replace('\n', '', $formula); 
-                        $formula = preg_replace('/\s+/', ' ', $formula); 
+                        $formula = trim($formula);
+                        $formula = str_replace('\n', '', $formula);
+                        $formula = preg_replace('/\s+/', ' ', $formula);
                         return $formula;
                     }, $formulas);
-                
+
 
                     $pattern = '/\\\\begin\{task\}(.*?)\\\\begin\{equation\*\}/s';
                     preg_match_all($pattern, $latexContent, $matches);
@@ -113,11 +114,11 @@ class LatexController extends Controller
                     preg_match_all($pattern, $latexContent, $matchesSolutions);
                     $solutions = $matchesSolutions[1];
                     $solutions = array_map(function ($solution) {
-                        $solution = trim($solution); 
-                        $solution = preg_replace('/\s+/', ' ', $solution); 
+                        $solution = trim($solution);
+                        $solution = preg_replace('/\s+/', ' ', $solution);
                         return $solution;
                     }, $solutions);
-                    
+
 
                     preg_match_all('/\\\\includegraphics\{(.*?)\}/', $latexContent, $matchesImages);
                     $imageFilenames = $matchesImages[1];
@@ -129,6 +130,8 @@ class LatexController extends Controller
                             'formula' => isset($formulas[$i]) ? '$$' . $formulas[$i] . '$$' : null,
                             'description' => $description ?? null,
                             'solution' => $solutions[$i] ?? null,
+                            'points' => '5',
+                            'setId' => $setId
                         ]);
 
                         if (isset($imageFilenames[$i])) {
@@ -148,7 +151,7 @@ class LatexController extends Controller
                         if (!$existingTask) {
                             $task->save();
                         }
-                
+
                     }
 
                 }
