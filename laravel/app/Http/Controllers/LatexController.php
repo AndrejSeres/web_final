@@ -24,6 +24,9 @@ class LatexController extends Controller
 
     public function saveParsedData()
     {
+        /* Writes out tasks on page -> http://127.0.0.1:8000/parsed-data */
+        $writeOnPage = true;
+
         $parsedData = [];
         $latexFilesPath = public_path('/mathExamples/latex');
         $files = scandir($latexFilesPath);
@@ -56,7 +59,6 @@ class LatexController extends Controller
 
                     preg_match_all('/\\\\includegraphics\{(.*?)\}/', $latexContent, $matchesImages);
                     $imageFilenames = $matchesImages[1];
-                    var_dump($imageFilenames);
 
                     for ($i = 0; $i < count($sectionNames); $i++) {
                         $description = isset($cleanedDescriptions[$i]) ? trim(str_replace('\\', '', $cleanedDescriptions[$i])) : null;
@@ -78,11 +80,15 @@ class LatexController extends Controller
                         }
 
                         $existingTask = Task::where('name', $task['name'])
-                            ->where('setId', $task['setId'])
+                            ->where('id', $task['setId'])
                             ->first();
 
                         if (!$existingTask) {
                             $task->save();
+                            if($writeOnPage){
+                                echo $task;
+                                echo "\n\n";
+                            }
                         }
 
                     }
@@ -129,6 +135,8 @@ class LatexController extends Controller
                             'formula' => isset($formulas[$i]) ? '$$' . $formulas[$i] . '$$' : null,
                             'description' => $description ?? null,
                             'solution' => $solutions[$i] ?? null,
+                            'points' => '5',
+                            'setId' => $setId
                         ]);
 
                         if (isset($imageFilenames[$i])) {
@@ -142,11 +150,15 @@ class LatexController extends Controller
                         }
 
                         $existingTask = Task::where('name', $task['name'])
-                            ->where('setId', $task['setId'])
+                            ->where('id', $task['setId'])
                             ->first();
 
                         if (!$existingTask) {
                             $task->save();
+                            if($writeOnPage){
+                                echo $task;
+                                echo "\n\n";
+                            }
                         }
                 
                     }
