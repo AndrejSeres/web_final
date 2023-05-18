@@ -6,7 +6,7 @@ return [
     'logged-in' => 'You are logged in!',
     'current-user' => 'Current user: ',
     'solution' => 'Solution',
-    'generate' => 'Show tasks',
+    'generate' => 'Show random task',
     'dashboard' => 'Dashboard',
     'points' => 'Points: ',
     'show-btn' => 'Show students',
