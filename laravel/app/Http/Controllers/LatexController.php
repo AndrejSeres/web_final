@@ -26,8 +26,9 @@ class LatexController extends Controller
         $parsedData = [];
         $latexFilesPath = public_path('/mathExamples/latex');
         $files = scandir($latexFilesPath);
-
+        $setId = 0;
         foreach ($files as $file) {
+            $setId++;
             if ($file !== '.' && $file !== '..') {
                 $filePath = $latexFilesPath . '/' . $file;
                 $latexContent = file_get_contents($filePath);
@@ -60,15 +61,14 @@ class LatexController extends Controller
                             'description' => $description ?? null,
                             'solution' => $solutions[$i] ?? null,
                             'points' => '5',
+                            'setId' => $setId
                         ]);
 
                         if (isset($imageFilenames[$i])) {
                             $imagePath = $imageFilenames[$i];
 
-                            // Extract the text after the last slash
                             $imageName = substr($imagePath, strrpos($imagePath, '/') + 1);
 
-                            // Set the image path for the task
                             $task->image = '/mathExamples/images/' . $imageName;
                         }
 
