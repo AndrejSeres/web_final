@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Task;
+use App\Models\UserTask;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -22,7 +23,6 @@ class LatexController extends Controller
 
     public function saveParsedData()
     {
-        DB::table('tasks')->truncate();
         $parsedData = [];
         $latexFilesPath = public_path('/mathExamples/latex');
         $files = scandir($latexFilesPath);
@@ -72,7 +72,14 @@ class LatexController extends Controller
                             $task->image = '/mathExamples/images/' . $imageName;
                         }
 
-                        $task->save();
+                        $existingTask = Task::where('name', $task['name'])
+                            ->where('setId', $task['setId'])
+                            ->first();
+
+                        if (!$existingTask) {
+                            $task->save();
+                        }
+
                     }
 
                 } elseif (strpos($file, 'odozva') !== false) {
