@@ -25,13 +25,15 @@
                     @guest
                         @if (Route::has('login'))
                             <li class="nav-item">
-                                <a class="nav-link" href="{{ route('login') }}">{{ __('Login') }}</a>
+                                <a class="nav-link" href="{{ route('login') }}">{{ __('navbar.login') }}</a>
+                                <div class="nav-line"></div>
                             </li>
                         @endif
 
                         @if (Route::has('register'))
                             <li class="nav-item">
-                                <a class="nav-link" href="{{ route('register') }}">{{ __('Register') }}</a>
+                                <a class="nav-link" href="{{ route('register') }}">{{ __('navbar.register') }}</a>
+                                <div class="nav-line"></div>
                             </li>
                             <li class="nav-item d-inline-flex align-self-center">
                                 <a class="nav-link pr-1 pl-0 @if(\Lang::locale() == 'sk') font-weight-bolder @endif"
@@ -59,7 +61,7 @@
                                 <a class="dropdown-item" href="{{ route('logout') }}"
                                    onclick="event.preventDefault();
                                                      document.getElementById('logout-form').submit();">
-                                    {{ __('Logout') }}
+                                    {{ __('navbar.logout') }}
                                 </a>
 
                                 <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
