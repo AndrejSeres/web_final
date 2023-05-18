@@ -30,13 +30,14 @@ class LatexController extends Controller
         $parsedData = [];
         $latexFilesPath = public_path('/mathExamples/latex');
         $files = scandir($latexFilesPath);
+
         $setId = 0;
         foreach ($files as $file) {
-            $setId++;
+
             if ($file !== '.' && $file !== '..') {
                 $filePath = $latexFilesPath . '/' . $file;
                 $latexContent = file_get_contents($filePath);
-
+                $setId++;
                 if (strpos($file, 'blokovka') !== false) {
                     preg_match_all('/\\\\section\*?\{(.*?)\}/s', $latexContent, $matchesName);
                     $sectionNames = $matchesName[1];
@@ -52,10 +53,7 @@ class LatexController extends Controller
                     $pattern = '/\\\\begin{equation\*}([\s\S]*?)\\\\end{equation\*}/';
                     preg_match_all($pattern, $latexContent, $matchesSolutions);
                     $solutions = $matchesSolutions[1];
-                    $solutions = array_map(function ($solution) {
-                        $solution = trim($solution); 
-                        $solution = preg_replace('/\s+/', ' ', $solution); 
-                    }, $solutions);
+                    $solutions = array_map('trim', $solutions);
 
                     preg_match_all('/\\\\includegraphics\{(.*?)\}/', $latexContent, $matchesImages);
                     $imageFilenames = $matchesImages[1];
@@ -96,45 +94,44 @@ class LatexController extends Controller
                 } elseif (strpos($file, 'odozva') !== false) {
                     preg_match_all('/\\\\section\*?\{(.*?)\}/s', $latexContent, $matchesName);
                     $sectionNames = $matchesName[1];
-                   
+
                     $pattern = '/\\\\begin\{equation\*\}(.*?)\\\\end\{equation\*\}/s';
                     preg_match_all($pattern, $latexContent, $matches);
                     $formulas = $matches[1];
                     $formulas = array_map(function ($formula) {
-                        $formula = trim($formula); 
-                        $formula = str_replace('\n', '', $formula); 
-                        $formula = preg_replace('/\s+/', ' ', $formula); 
+                        $formula = trim($formula);
+                        $formula = str_replace('\n', '', $formula);
+                        $formula = preg_replace('/\s+/', ' ', $formula);
                         return $formula;
                     }, $formulas);
-                
 
-                    $pattern = '/\\\\begin\{task\}(.*?)\\\\begin\{equation\*\}/s';
+
+                    $pattern = '/\\\\begin\{task\}(.*?)\\\\end\{task\}/s';
                     preg_match_all($pattern, $latexContent, $matches);
-                    $cleanedDescriptions = array_map(function ($match) {
-                        return preg_replace('/\$.*?\$/s', '', $match);
-                    }, $matches[1]);
+                    $taskContents = $matches[1];
 
+                    $cleanedDescriptions = array_map(function ($content) {
+                        $content = preg_replace('/\\\\begin\{equation\*\}(.*?)\\\\end\{equation\*\}/s', '', $content);
+                        $content = str_replace('\\', '', $content);
+                        $content = preg_replace('/(\$)/', '$${1}', $content); // Add "$$" around "$" symbols
+                        return trim($content);
+                    }, $taskContents);
 
-                    $pattern = '/\\\\begin{equation\*}([\s\S]*?)\\\\end{equation\*}/';
-                    preg_match_all($pattern, $latexContent, $matchesSolutions);
-                    $solutions = $matchesSolutions[1];
-                    $solutions = array_map(function ($solution) {
-                        $solution = trim($solution); 
-                        $solution = preg_replace('/\s+/', ' ', $solution); 
-                        return $solution;
-                    }, $solutions);
-                    
+                    var_dump($cleanedDescriptions);
+
 
                     preg_match_all('/\\\\includegraphics\{(.*?)\}/', $latexContent, $matchesImages);
                     $imageFilenames = $matchesImages[1];
 
                     for ($i = 0; $i < count($sectionNames); $i++) {
-                        $description = isset($cleanedDescriptions[$i]) ? trim(str_replace('\\', '', $cleanedDescriptions[$i])) : null;
+                        $formulaIndex = $i * 2;
+                        $solutionIndex = $i * 2 + 1;
+
                         $task = new Task([
                             'name' => $sectionNames[$i],
-                            'formula' => isset($formulas[$i]) ? '$$' . $formulas[$i] . '$$' : null,
-                            'description' => $description ?? null,
-                            'solution' => $solutions[$i] ?? null,
+                            'formula' => isset($formulas[$formulaIndex]) ? '$$' . $formulas[$formulaIndex] . '$$' : null,
+                            'description' => $cleanedDescriptions[$i] ?? null,
+                            'solution' => $formulas[$solutionIndex] ?? null,
                             'points' => '5',
                             'setId' => $setId
                         ]);
@@ -160,7 +157,7 @@ class LatexController extends Controller
                                 echo "\n\n";
                             }
                         }
-                
+
                     }
 
                 }
@@ -175,20 +172,37 @@ class LatexController extends Controller
 
     public function generateTasks()
     {
-        $tasks = Task::inRandomOrder()->limit(5)->get();
         $user = Auth::user();
 
+        $generatedTasks = UserTask::where('user_id', $user->id)
+            ->where('state', 'delivered')
+            ->pluck('task_id')
+            ->toArray();
+
+        $tasks = Task::whereNotIn('id', $generatedTasks)
+            ->inRandomOrder()
+            ->limit(1)
+            ->get();
+
         foreach ($tasks as $task) {
-            UserTask::create([
-                'user_id' => $user->id,
-                'task_id' => $task->id,
-                'state' => 'generated',
-                'points' => 0,
-                'solution' => null,
-            ]);
+            $existingUserTask = UserTask::where('user_id', $user->id)
+                ->where('task_id', $task->id)
+                ->first();
+
+            if (!$existingUserTask) {
+                UserTask::create([
+                    'user_id' => $user->id,
+                    'task_id' => $task->id,
+                    'state' => 'generated',
+                    'points' => 0,
+                    'solution' => null,
+                ]);
+            }
         }
 
         return response()->json($tasks);
     }
+
+
 }
 

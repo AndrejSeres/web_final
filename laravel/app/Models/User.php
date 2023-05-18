@@ -45,7 +45,7 @@ class User extends Authenticatable
 
     public function tasks()
     {
-        return $this->belongsToMany(Task::class, 'user_task')
+        return $this->belongsToMany(Task::class, 'user_tasks')
             ->withPivot('state', 'points', 'solution')
             ->withTimestamps();
     }
