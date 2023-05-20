@@ -36,9 +36,11 @@ Route::get('/locale/{locale}', function ($locale) {
 // Route::get('/parsed-data', 'LatexController@getParsedData');
 Route::get('/parsed-data', [LatexController::class, 'saveParsedData']);
 Route::get('/generate-tasks', [LatexController::class, 'generateTasks']);
+
+//students info routes
 Route::get('/show-students', [StudentController::class, 'index']);
-
-
+Route::get('/student-detail/{studentId}', [StudentController::class, 'showStudentDetail']);
+Route::put('/update-points/{userTaskId}/{taskId}', [StudentController::class, 'updatePoints']);
 
 // Registration Routes
 Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
