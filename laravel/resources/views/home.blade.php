@@ -34,11 +34,35 @@
                         {{ __('home.current-user') }} {{ auth()->user()->name }}
                     </div>
 
+
                     @if (auth()->user()->role === 'teacher')
                     <div>
                         Teacher options
                         <button id="show-students-button" class="btn btn-primary">{{ __('home.show-btn') }}</button>
                         <div id="table-container" class="mt-3"></div>
+                            @if (auth()->user()->role === 'teacher')
+                                <div id="table-container-all-students">
+                                    <table id="students-table" class="table">
+                                        <thead>
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>Name</th>
+                                                <th>Email</th>
+                                                <th>Generated Tasks</th>
+                                                <th>Delivered Tasks</th>
+                                                <th>Points</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                    </table>
+                                </div>
+                            @else
+                                <div>
+                                    <button id="generate-tasks-button" class="btn btn-primary">{{ __('home.generate') }}</button>
+                                </div>
+                                <div id="task-container" class="mt-3"></div>
+                            @endif
+                        @endauth
                     </div>
                     @else
                     <div>
@@ -125,7 +149,6 @@
                 //OUTPUT Latex file is in the variable latexContent
                 console.log(latexContent);
 
-
                 // Render MathJax to display LaTeX formulas
                 MathJax.typeset()
                     .then(() => {
@@ -207,6 +230,5 @@
 </script>
 
 
-
-
 @endsection
+

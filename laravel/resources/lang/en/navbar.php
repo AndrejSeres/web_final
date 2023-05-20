@@ -10,5 +10,7 @@ return [
     'login' => 'Login',
     'register' => 'Register',
     'logout' => 'Logout',
+    'tasks' => "My tasks",
+    'admin' => "Admin panel"
 
 ];
