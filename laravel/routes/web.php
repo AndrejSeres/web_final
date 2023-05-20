@@ -20,7 +20,8 @@ use App\Http\Controllers\StudentController;
 // Route::get('/', function () {
 //     return view('welcome');
 // });
-Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('show.home');
+// Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('show.home');
+Route::get('/', [App\Http\Controllers\WelcomeController::class, 'index'])->name('show.home');
 Route::get('/welcome', [App\Http\Controllers\WelcomeController::class, 'index'])->name('show.welcome');
 
 Route::get('/locale/{locale}', function ($locale) {
@@ -54,5 +55,4 @@ Auth::routes();
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 Route::get('/tasks', [App\Http\Controllers\TaskController::class, 'index'])->name('show.tasks');
-
 
