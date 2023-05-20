@@ -1,57 +1,39 @@
-# Použi oficiálny obraz PHP s Apache
-FROM php:7.4-apache
+FROM php:8.1-apache
 
-# Nastav pracovný adresár na adresár s kódom Laravel projektu
-WORKDIR /laravel
+RUN apt update
 
-# Nakopíruj obsah Laravel projektu do kontajnera
-COPY . /laravel
+RUN apt upgrade -y
 
-# Nainštaluj potrebné závislosti
-RUN apt-get update && \
-    apt-get install -y \
-    libzip-dev \
-    zip \
-    && docker-php-ext-install zip
+RUN docker-php-ext-install pdo_mysql
 
-# Nainštaluj Composer
+RUN apt install -y git
+
+RUN apt install -y zip unzip
+
+RUN curl -sL https://deb.nodesource.com/setup_16.x | bash 
+
+RUN apt install -y nodejs
+
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-# Inštalácia Laravel/UI balíka
+ADD . laravel
+
+WORKDIR /var/www/html/laravel
+
 RUN composer require laravel/ui
 
-# Vygenerovanie autentifikačných views
-RUN php artisan ui:auth
+RUN php artisan ui:auth --no-interaction
 
-# Nastavenie Bootstrap šablón
-RUN php artisan ui bootstrap
+RUN php artisan ui bootstrap --no-interaction
 
-# Inštalácia NPM balíkov
 RUN npm install
 
-# Kompilácia assets pre vývoj
-RUN npm run dev
-
-# Kompilácia assets pre produkčné prostredie
 RUN npm run build
 
-# Generovanie aplikáčneho kľúča
 RUN php artisan key:generate
 
-# Migrácia databázy
-RUN php artisan migrate
+# RUN php artisan migrate
 
-# Nainštaluj PHP závislosti pomocou Composeru
-RUN composer install --no-interaction --no-dev --prefer-dist
+# EXPOSE 8001
 
-# Nastav práva pre zápis na úrovni kontajnera
-RUN chown -R www-data:www-data /laravel/storage /laravel/storage/framework/cache
-
-# Nastav Apache povolením prepisovania URL
-RUN a2enmod rewrite
-
-# Exponuj port 80
-EXPOSE 80
-
-# Spusti Apache pri štarte kontajnera
-CMD ["apache2-foreground"]
+# CMD ["php", "artisan", "serve", "--port=8001"]
