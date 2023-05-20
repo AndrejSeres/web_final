@@ -21,6 +21,15 @@
                         <a class="nav-link" href="{{ route('show.home') }}">{{ __('navbar.home') }}</a>
                         <div class="nav-line"></div>
                     </li>
+
+                    <li class="nav-item">
+                        @if(optional(auth()->user())->role === 'student')
+                            <a class="nav-link" href="{{ route('show.tasks') }}">{{ __('navbar.tasks') }}</a>
+                            <div class="nav-line"></div>
+                        @endif
+                    </li>
+
+
                     <!-- Authentication Links -->
                     @guest
                         @if (Route::has('login'))
@@ -69,9 +78,9 @@
                                 </form>
                             </div>
                         </li>
-                        
+
                     @endguest
-                    
+
                 </ul>
             </div>
         </div>
