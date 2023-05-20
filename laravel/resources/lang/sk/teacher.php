@@ -8,7 +8,8 @@ return [
     'date_to' => "Dátum do",
     'access' => "Prístup",
     "open" => "Otvorený",
-    "closed" => "Zatvorený"
+    "closed" => "Zatvorený",
+    "points" => "Body"
 
 
 ];

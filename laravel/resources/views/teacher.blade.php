@@ -25,13 +25,18 @@
                             </div>
 
                             <div class="form-group">
+                                <label for="points">{{ __('teacher.points') }}</label>
+                                <input type="number" name="points" class="form-control" required>
+                            </div>
+
+                            <div class="form-group">
                                 <label for="date_from">{{ __('teacher.date_from') }}</label>
-                                <input type="date" name="date_from" class="form-control" required>
+                                <input type="date" name="date_from" class="form-control">
                             </div>
 
                             <div class="form-group">
                                 <label for="date_to">{{ __('teacher.date_to') }}</label>
-                                <input type="date" name="date_to" class="form-control" required>
+                                <input type="date" name="date_to" class="form-control">
                             </div>
 
                             <div class="form-group">
