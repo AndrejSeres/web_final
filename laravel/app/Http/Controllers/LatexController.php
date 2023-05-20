@@ -7,6 +7,7 @@ use App\Models\UserTask;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class LatexController extends Controller
 {
@@ -160,6 +161,7 @@ class LatexController extends Controller
 
 
 
+
     public function generateTasks()
     {
         $user = Auth::user();
@@ -170,6 +172,17 @@ class LatexController extends Controller
             ->toArray();
 
         $tasks = Task::whereNotIn('id', $generatedTasks)
+            ->where('open', 1)
+            ->where(function ($query) {
+                $query->where(function ($query) {
+                    $query->whereNull('date_from')
+                        ->orWhere('date_from', '<=', Carbon::today());
+                })
+                    ->where(function ($query) {
+                        $query->whereNull('date_to')
+                            ->orWhere('date_to', '>=', Carbon::today());
+                    });
+            })
             ->inRandomOrder()
             ->limit(1)
             ->get();
@@ -192,7 +205,6 @@ class LatexController extends Controller
 
         return response()->json($tasks);
     }
-
 
 }
 

@@ -9,7 +9,8 @@ return [
     'access' => "Access",
     "open" => "Open",
     "closed" => "Closed",
-    "points" => "Points"
+    "points" => "Points",
+    "update" => "Update"
 
 
 ];

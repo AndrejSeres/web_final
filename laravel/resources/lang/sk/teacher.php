@@ -9,7 +9,8 @@ return [
     'access' => "Prístup",
     "open" => "Otvorený",
     "closed" => "Zatvorený",
-    "points" => "Body"
+    "points" => "Body",
+    "update" => "Modifikuj"
 
 
 ];
