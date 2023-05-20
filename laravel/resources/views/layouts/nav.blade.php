@@ -28,7 +28,12 @@
                             <div class="nav-line"></div>
                         @endif
                     </li>
-
+                    <li class="nav-item">
+                        @if(optional(auth()->user())->role === 'teacher')
+                            <a class="nav-link" href="{{ route('show.admin') }}">{{ __('navbar.admin') }}</a>
+                            <div class="nav-line"></div>
+                        @endif
+                    </li>
 
                     <!-- Authentication Links -->
                     @guest

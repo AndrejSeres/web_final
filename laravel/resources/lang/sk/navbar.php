@@ -10,6 +10,7 @@ return [
     'login' => 'Prihlásenie',
     'register' => 'Registrácia',
     'logout' => 'Odhlásenie',
-    'tasks' => "Moje príklady"
+    'tasks' => "Moje príklady",
+    'admin' => "Admin panel"
 
 ];
