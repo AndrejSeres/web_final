@@ -56,5 +56,8 @@ Auth::routes();
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 Route::get('/tasks', [App\Http\Controllers\TaskController::class, 'index'])->name('show.tasks');
+Route::put('/tasks/update', [App\Http\Controllers\TaskController::class, 'update'])->name('tasks.update');
+
+Route::get('/teacher', [App\Http\Controllers\TeacherController::class, 'index'])->name('show.admin');
 
 
