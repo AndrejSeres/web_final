@@ -21,7 +21,7 @@ use App\Http\Controllers\StudentController;
 //     return view('welcome');
 // });
 // Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('show.home');
-Route::get('/', [App\Http\Controllers\WelcomeController::class, 'index'])->name('show.home');
+Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('show.home');
 Route::get('/welcome', [App\Http\Controllers\WelcomeController::class, 'index'])->name('show.welcome');
 
 Route::get('/locale/{locale}', function ($locale) {

@@ -34,11 +34,6 @@
                         {{ __('home.current-user') }} {{ auth()->user()->name }}
                     </div>
 
-
-                    @if (auth()->user()->role === 'teacher')
-                    <div>
-                        Teacher options
-                        <button id="show-students-button" class="btn btn-primary">{{ __('home.show-btn') }}</button>
                         <div id="table-container" class="mt-3"></div>
                             @if (auth()->user()->role === 'teacher')
                                 <div id="table-container-all-students">
@@ -56,14 +51,6 @@
                                         <tbody></tbody>
                                     </table>
                                 </div>
-                            @else
-                                <div>
-                                    <button id="generate-tasks-button" class="btn btn-primary">{{ __('home.generate') }}</button>
-                                </div>
-                                <div id="task-container" class="mt-3"></div>
-                            @endif
-                        @endauth
-                    </div>
                     @else
                     <div>
                         <button id="generate-tasks-button" class="btn btn-primary">{{ __('home.generate') }}</button>
