@@ -10,6 +10,7 @@ return [
     'dashboard' => 'Nástenka',
     'points' => 'Body za úlohu: ',
     'show-btn' => 'Zobraziť študentov',
-    'your_solution' => 'Tvoje riešenie'
+    'your_solution' => 'Tvoje riešenie',
+    'submit_solution' => "Odovzdaj riešenie"
 
 ];

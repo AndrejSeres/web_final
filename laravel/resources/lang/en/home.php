@@ -11,5 +11,6 @@ return [
     'dashboard' => 'Dashboard',
     'points' => 'Points: ',
     'show-btn' => 'Show students',
+    'submit_solution' => "Submit solution"
 
 ];

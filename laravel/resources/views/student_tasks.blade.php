@@ -60,7 +60,7 @@
                                 </div>
                                 <div class="form-group">
                                     <button class="btn btn-primary" onclick="submitSolution({{ $task->id }})">
-                                        Submit Solution
+                                        {{ __('home.submit_solution') }}
                                     </button>
                                 </div>
                             </div>
