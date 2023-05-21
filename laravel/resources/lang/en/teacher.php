@@ -15,7 +15,11 @@ return [
     "sets" => "Math sets",
     "upload" => "Upload",
     "call_parsed_data" => "Rescan files",
-    "upload_file" => "Upload file"
+    "upload_file" => "Upload file",
+    "error" => "Error",
+    "error_msg" => "Data failed to parse.",
+    "success" => "Success",
+    "success_msg" => "Data successfully parsed!"
 
 
 ];

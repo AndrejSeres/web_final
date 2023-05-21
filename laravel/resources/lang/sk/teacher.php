@@ -15,7 +15,11 @@ return [
     "sets" => "Sady príkladov",
     "upload" => "Nahraj",
     "call_parsed_data" => "Preskenuj sady",
-    "upload_file" => "Nahraj súbor"
+    "upload_file" => "Nahraj súbor",
+    "error" => "Chyba",
+    "error_msg" => "Chyba parsovania príkladov.",
+    "success" => "Úspech",
+    "success_msg" => "Dáta úspešne sparsované!"
 
 
 ];

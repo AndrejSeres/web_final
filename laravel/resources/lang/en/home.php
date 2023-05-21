@@ -11,6 +11,10 @@ return [
     'dashboard' => 'Dashboard',
     'points' => 'Points: ',
     'show-btn' => 'Show students',
-    'submit_solution' => "Submit solution"
+    'submit_solution' => "Submit solution",
+    "error" => "Error",
+    "error_msg" => "Something went wrong.",
+    "success" => "Success",
+    "success_msg" => "Solution successfully sent!"
 
 ];

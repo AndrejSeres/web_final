@@ -124,16 +124,27 @@
                 .then(response => {
                     // Handle the response from the server
                     if (response.ok) {
-                        // Successful response
-                        console.log('Parsed data called successfully');
+                        Swal.fire({
+                            icon: 'success',
+                            title: '{{ __("teacher.success") }}',
+                            text: '{{ __("teacher.success_msg") }}',
+                        }).then(() => {
+                            location.reload(); // Refresh the page
+                        });
                     } else {
-                        // Error response
-                        console.log('Error calling parsed data');
+                        Swal.fire({
+                            icon: 'error',
+                            title: '{{ __("teacher.error") }}',
+                            text: '{{ __("teacher.error_msg") }}',
+                        }).then(() => {
+                            location.reload();
+                        });
                     }
                 })
                 .catch(error => {
                     console.log('Error calling parsed data:', error);
                 });
         }
+
     </script>
 @endsection

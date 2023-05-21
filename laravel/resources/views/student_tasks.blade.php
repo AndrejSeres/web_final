@@ -122,18 +122,34 @@
                         },
                         data: { taskId, result, points, userSolution: latexContent},
                         success: function(response) {
-                            // Update the UI or perform any necessary actions on success
-                            console.log('User task updated successfully!');
+                            Swal.fire({
+                                icon: 'success',
+                                title: '{{ __("home.success") }}',
+                                text: '{{ __("home.success_msg") }}',
+                            }).then(() => {
+                                location.reload(); // Refresh the page
+                            });
                         },
                         error: function(error) {
-                            // Handle error scenario
-                            console.error('Error updating user task:', error);
+                            Swal.fire({
+                                icon: 'error',
+                                title: '{{ __("home.error") }}',
+                                text: '{{ __("home.error_msg") }}',
+                            }).then(() => {
+                                location.reload(); // Refresh the page
+                            });
                         },
                     });
                 })
                 .catch(error => {
                     console.log(taskId + " " + latexSolution);
-                    console.error('Error submitting solution:', error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: '{{ __("home.error") }}',
+                        text: '{{ __("home.error_msg") }}',
+                    }).then(() => {
+                        location.reload(); // Refresh the page
+                    });
                 });
         }
     </script>
