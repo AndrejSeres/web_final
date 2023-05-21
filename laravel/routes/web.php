@@ -65,3 +65,5 @@ Route::get('/teacher', [App\Http\Controllers\TeacherController::class, 'index'])
 Route::post('/compare-solution', [App\Http\Controllers\TaskController::class, 'compareSolution']);
 Route::post('/update-user-task', [App\Http\Controllers\TaskController::class, 'updateUserTask']);
 
+
+Route::post('/upload-file', [LatexController::class, 'uploadFile'])->name('upload.file');

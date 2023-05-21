@@ -1,14 +1,16 @@
 @extends('layouts.app')
 
 @php
-    $setIds = \App\Models\Task::pluck('setId')->unique();
+    $sets = \App\Models\Task::select('setId', 'date_from', 'date_to', 'open')->distinct('setId')->get();
+    $setIds = \App\Models\Task::distinct('setId')->pluck('setId');
 @endphp
 
 @section('content')
+
     <div class="container mt-4">
         <div class="row justify-content-center">
-            <div class="col-md-8">
-                <div class="card">
+            <div class="col-6">
+                <div class="card" >
                     <div class="card-header">{{ __('teacher.tasks') }}</div>
                     <div class="card-body">
                         <form method="POST" action="{{ route('tasks.update') }}">
@@ -52,6 +54,86 @@
                     </div>
                 </div>
             </div>
+            <div class="col-md-6">
+                <div class="card h-100 d-flex flex-column justify-content-between">
+                    <div class="card-header">{{ __('teacher.upload_file') }}</div>
+                    <div class="card-body">
+                        <button type="button" class="btn btn-primary" onclick="callParsedData()">{{ __('teacher.call_parsed_data') }}</button>
+                        <form method="POST" action="{{ route('upload.file') }}" enctype="multipart/form-data">
+                            @csrf
+                            <div class="form-group">
+                                <label for="file">{{ __('teacher.upload_file') }}</label>
+                                <input type="file" name="file" class="form-control-file" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">{{ __('teacher.upload') }}</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
         </div>
+        </div>
+        <div class="row justify-content-center">
+
+            <div class="col-md-7 mt-4">
+                <div class="card">
+                    <div class="card-header">{{ __('teacher.sets') }}</div>
+                    <div class="card-body">
+                        <table class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th>{{ __('teacher.set_id') }}</th>
+                                <th>{{ __('teacher.date_from') }}</th>
+                                <th>{{ __('teacher.date_to') }}</th>
+                                <th>{{ __('teacher.access') }}</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            @foreach ($sets as $set)
+                                <tr>
+                                    <td>{{ $set->setId }}</td>
+                                    @if ($set->date_from == null)
+                                        <td>{{ __('teacher.not_set') }}</td>
+                                    @else
+                                        <td>{{ $set->date_from }}</td>
+                                    @endif
+
+                                    @if ($set->date_to == null)
+                                        <td>{{ __('teacher.not_set') }}</td>
+                                    @else
+                                        <td>{{ $set->date_to }}</td>
+                                    @endif
+
+                                    @if ($set->open == 1)
+                                        <td>{{ __('teacher.open') }}</td>
+                                    @else
+                                        <td>{{ __('teacher.closed') }}</td>
+                                    @endif
+                                </tr>
+                            @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
     </div>
+
+    <script>
+        function callParsedData() {
+            fetch('/parsed-data')
+                .then(response => {
+                    // Handle the response from the server
+                    if (response.ok) {
+                        // Successful response
+                        console.log('Parsed data called successfully');
+                    } else {
+                        // Error response
+                        console.log('Error calling parsed data');
+                    }
+                })
+                .catch(error => {
+                    console.log('Error calling parsed data:', error);
+                });
+        }
+    </script>
 @endsection

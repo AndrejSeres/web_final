@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
-
+use Illuminate\Support\Facades\Storage;
 class LatexController extends Controller
 {
 
@@ -227,6 +227,31 @@ class LatexController extends Controller
 
         return response()->json($tasks);
     }
+
+
+
+
+    public function uploadFile(Request $request)
+    {
+        if ($request->hasFile('file')) {
+            $file = $request->file('file');
+
+            $directory = 'mathExamples/latex';
+            $filename = $file->getClientOriginalName(); // Get the original file name
+
+            $filePath = $directory . '/' . $filename;
+
+            Storage::disk('public')->put($filePath, $file->getContent());
+
+            $cleanFilePath = json_encode($filePath, JSON_UNESCAPED_SLASHES);
+
+            return response()->json(['message' => 'File uploaded successfully', 'file_path' => $cleanFilePath]);
+        }
+
+        return response()->json(['message' => 'No file uploaded'], 400);
+    }
+
+
 
 }
 

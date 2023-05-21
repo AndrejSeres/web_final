@@ -47,13 +47,11 @@
                             @endif
                             <div class="form-group">
                                 <label>{{ __('home.solution') }}</label>
-                                <p>{{ $userTask->solution }}</p>
+                                <p>$${{ $userTask->solution }}$$</p>
                             </div>
                             <div class="form-group">
-                                <label>{{ __('home.points') }}</label>
-                                <input type="number" id="points-input-{{ $task->id }}"
-                                       value="{{ $points }}" min="0" step="1">
-                                <button onclick="updatePoints({{ $userTask->id }}, {{ $task->id }})">Save</button>
+                                <label>{{ __('home.points') }}{{ $points }} </label>
+                                <p></p>
                             </div>
                         </div>
                     </div>

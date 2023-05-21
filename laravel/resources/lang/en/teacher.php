@@ -10,7 +10,12 @@ return [
     "open" => "Open",
     "closed" => "Closed",
     "points" => "Points",
-    "update" => "Update"
+    "update" => "Update",
+    "not_set" => "Not set",
+    "sets" => "Math sets",
+    "upload" => "Upload",
+    "call_parsed_data" => "Rescan files",
+    "upload_file" => "Upload file"
 
 
 ];

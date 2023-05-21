@@ -10,7 +10,12 @@ return [
     "open" => "Otvorený",
     "closed" => "Zatvorený",
     "points" => "Body",
-    "update" => "Modifikuj"
+    "update" => "Modifikuj",
+    "not_set" => "Nenastavené",
+    "sets" => "Sady príkladov",
+    "upload" => "Nahraj",
+    "call_parsed_data" => "Preskenuj sady",
+    "upload_file" => "Nahraj súbor"
 
 
 ];
