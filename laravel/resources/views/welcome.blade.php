@@ -6,7 +6,7 @@
 
     <body>
 
-        <div class="container alert-info p-3" id="textToDownload">
+        <div class="container alert-info p-3 mt-4" id="textToDownload">
             <div class="row">
                 <div class="col-12">
                     <h1>Webová aplikácia Math-ify</h1>

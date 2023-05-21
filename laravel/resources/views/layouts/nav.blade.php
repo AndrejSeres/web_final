@@ -1,6 +1,6 @@
 <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
         <div class="container">
-            <a class="navbar-brand" href="{{ url('/') }}">
+            <a class="navbar-brand" href="{{ url('/welcome') }}">
                 {{ config('app.name', 'WolframAlphaProfessional') }}
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
