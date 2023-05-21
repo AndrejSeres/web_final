@@ -61,3 +61,7 @@ Route::put('/tasks/update', [App\Http\Controllers\TaskController::class, 'update
 
 Route::get('/teacher', [App\Http\Controllers\TeacherController::class, 'index'])->name('show.admin');
 
+
+Route::post('/compare-solution', [App\Http\Controllers\TaskController::class, 'compareSolution']);
+Route::post('/update-user-task', [App\Http\Controllers\TaskController::class, 'updateUserTask']);
+

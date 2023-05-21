@@ -13,6 +13,7 @@
 
                         $state = $userTask ? $userTask->state : null;
                         $points = $userTask ? $userTask->points : null;
+                        $solution = $userTask ? $userTask->solution : null;
                     @endphp
 
                     <div class="accordion-item">
@@ -45,11 +46,22 @@
                                     </div>
                                 @endif
                                 <div class="form-group">
-                                    <label for="solution_{{ $task->id }}">{{ __('home.solution') }}</label>
-                                    <input type="text" class="form-control" id="solution_{{ $task->id }}">
+                                    <label for="solution_{{ $task->id }}">{{ __('home.your_solution') }}</label>
+                                    @if ($solution)
+                                        <div id="math-field_{{ $task->id }}" class="math-fieldClass">
+                                            $${{ $solution }}$$
+                                        </div>
+                                    @else
+                                        <span id="math-field-{{ $task->id }}" class="math-fieldClass" style="width: 50px" onload="loadLatex({{$task->id }})"></span>
+                                    @endif
                                 </div>
                                 <div class="form-group">
                                     <label>{{ __('home.points') }}{{ $task->points }}</label>
+                                </div>
+                                <div class="form-group">
+                                    <button class="btn btn-primary" onclick="submitSolution({{ $task->id }})">
+                                        Submit Solution
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -58,4 +70,73 @@
             </div>
         </div>
     </div>
+    <script>
+        window.onload = function() {
+
+            @foreach(auth()->user()->tasks as $task)
+            loadLatex({{ $task->id }});
+            @endforeach
+        };
+    function loadLatex(id){
+        var mathFieldSpan = document.getElementById('math-field-'+id);
+        var latexContent;
+        console.log("hovni");
+        var MQ = MathQuill.getInterface(2); // for backcompat
+        var mathField = MQ.MathField(mathFieldSpan, {
+            spaceBehavesLikeTab: true, // configurable
+            handlers: {
+                edit: function() { // useful event handlers
+                    latexContent = mathField.latex(); // simple API
+                    console.log(latexContent);
+                    mathFieldSpan.dataset.latexContent = latexContent;
+                }
+            }
+        });
+        MathJax.typeset();
+    }
+
+
+        function submitSolution(taskId) {
+            const mathFieldSpan = document.getElementById(`math-field-`+taskId);
+            const latexContent = mathFieldSpan.dataset.latexContent; // Retrieve the stored LaTeX content
+
+            const csrfToken = window.csrfToken;
+            console.log(latexContent);
+            fetch('/compare-solution', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken,
+                },
+                body: JSON.stringify({ taskId, latexSolution: latexContent }),
+            })
+                .then(response => response.json())
+                .then(data => {
+                    // Assuming the server responds with the result and points
+                    const { result, points } = data;
+                    console.log(result);
+                    $.ajax('/update-user-task', {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': csrfToken,
+                        },
+                        data: { taskId, result, points, userSolution: latexContent},
+                        success: function(response) {
+                            // Update the UI or perform any necessary actions on success
+                            console.log('User task updated successfully!');
+                        },
+                        error: function(error) {
+                            // Handle error scenario
+                            console.error('Error updating user task:', error);
+                        },
+                    });
+                })
+                .catch(error => {
+                    console.log(taskId + " " + latexSolution);
+                    console.error('Error submitting solution:', error);
+                });
+        }
+    </script>
+
+
 @endsection

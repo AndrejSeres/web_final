@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\UserTask;
 use Illuminate\Http\Request;
 use App\Models\Task;
 
@@ -47,6 +48,48 @@ class TaskController extends Controller
         return redirect()->back()->with('success', 'Tasks updated successfully.');
     }
 
+    public function compareSolution(Request $request)
+    {
+        $taskId = $request->input('taskId');
+        $userSolution = str_replace('\frac', '\dfrac', $request->input('latexSolution'));
 
+
+        $task = Task::find($taskId);
+        if (!$task) {
+            return response()->json(['error' => 'Task not found'], 404);
+        }
+
+        $savedSolution = $task->solution;
+        $result = $userSolution == $savedSolution;
+
+        return response()->json(['result' => $result, 'points' => $task->points]);
+    }
+
+    public function updateUserTask(Request $request)
+    {
+        $taskId = $request->input('taskId');
+
+        $points = $request->input('points');
+
+        $userTask = UserTask::where('user_id', auth()->user()->id)->where('task_id', $taskId)->first();
+
+
+        if ($userTask) {
+            $userTask->state = 'delivered';
+            $userTask->solution = $request->input('userSolution');
+            if ($request->input('result') === 'true') {
+                $userTask->points = $points;
+            } else {
+                $userTask->points =  0;
+            }
+
+
+
+
+            $userTask->save();
+        }
+
+        return response()->json(['success' => true]);
+    }
 
 }

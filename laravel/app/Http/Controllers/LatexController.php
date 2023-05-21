@@ -25,6 +25,28 @@ class LatexController extends Controller
 
     public function saveParsedData()
     {
+        function extractSolution($solution)
+        {
+
+            $equalSignCount = substr_count($solution, '=');
+            if ($equalSignCount !== 2) {
+                $extractedSolution = str_replace(' ', '', $solution);
+                return $extractedSolution;
+            }
+
+
+            if (preg_match('/^(.*?=.*?)=/', $solution, $matches)) {
+                $extractedSolution = trim($matches[1]);
+
+
+                $extractedSolution = str_replace(' ', '', $extractedSolution);
+
+                return $extractedSolution;
+            }
+
+            return null;
+        }
+
         $parsedData = [];
         $latexFilesPath = public_path('/mathExamples/latex');
         $files = scandir($latexFilesPath);
@@ -108,7 +130,7 @@ class LatexController extends Controller
                     $cleanedDescriptions = array_map(function ($content) {
                         $content = preg_replace('/\\\\begin\{equation\*\}(.*?)\\\\end\{equation\*\}/s', '', $content);
                         $content = str_replace('\\', '', $content);
-                        $content = preg_replace('/(\$)/', '$${1}', $content); // Add "$$" around "$" symbols
+                        $content = preg_replace('/(\$)/', '$${1}', $content);
                         return trim($content);
                     }, $taskContents);
 
@@ -126,7 +148,7 @@ class LatexController extends Controller
                             'name' => $sectionNames[$i],
                             'formula' => isset($formulas[$formulaIndex]) ? '$$' . $formulas[$formulaIndex] . '$$' : null,
                             'description' => $cleanedDescriptions[$i] ?? null,
-                            'solution' => $formulas[$solutionIndex] ?? null,
+                            'solution' => extractSolution($formulas[$solutionIndex]),
                             'points' => '5',
                             'setId' => $setId
                         ]);
