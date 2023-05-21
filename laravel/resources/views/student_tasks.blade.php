@@ -80,7 +80,7 @@
     function loadLatex(id){
         var mathFieldSpan = document.getElementById('math-field-'+id);
         var latexContent;
-        console.log("hovni");
+
         var MQ = MathQuill.getInterface(2); // for backcompat
         var mathField = MQ.MathField(mathFieldSpan, {
             spaceBehavesLikeTab: true, // configurable
