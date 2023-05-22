@@ -20,6 +20,7 @@ use App\Http\Controllers\StudentController;
 // Route::get('/', function () {
 //     return view('welcome');
 // });
+// Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('show.home');
 Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('show.home');
 Route::get('/welcome', [App\Http\Controllers\WelcomeController::class, 'index'])->name('show.welcome');
 
@@ -36,9 +37,11 @@ Route::get('/locale/{locale}', function ($locale) {
 // Route::get('/parsed-data', 'LatexController@getParsedData');
 Route::get('/parsed-data', [LatexController::class, 'saveParsedData']);
 Route::get('/generate-tasks', [LatexController::class, 'generateTasks']);
+
+//students info routes
 Route::get('/show-students', [StudentController::class, 'index']);
-
-
+Route::get('/student-detail/{studentId}', [StudentController::class, 'showStudentDetail']);
+Route::put('/update-points/{userTaskId}/{taskId}', [StudentController::class, 'updatePoints']);
 
 // Registration Routes
 Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
@@ -54,5 +57,13 @@ Auth::routes();
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 Route::get('/tasks', [App\Http\Controllers\TaskController::class, 'index'])->name('show.tasks');
+Route::put('/tasks/update', [App\Http\Controllers\TaskController::class, 'update'])->name('tasks.update');
+
+Route::get('/teacher', [App\Http\Controllers\TeacherController::class, 'index'])->name('show.admin');
 
 
+Route::post('/compare-solution', [App\Http\Controllers\TaskController::class, 'compareSolution']);
+Route::post('/update-user-task', [App\Http\Controllers\TaskController::class, 'updateUserTask']);
+
+
+Route::post('/upload-file', [LatexController::class, 'uploadFile'])->name('upload.file');

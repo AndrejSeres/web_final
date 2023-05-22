@@ -1,6 +1,6 @@
 <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
         <div class="container">
-            <a class="navbar-brand" href="{{ url('/') }}">
+            <a class="navbar-brand" href="{{ url('/welcome') }}">
                 {{ config('app.name', 'WolframAlphaProfessional') }}
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
@@ -28,7 +28,12 @@
                             <div class="nav-line"></div>
                         @endif
                     </li>
-
+                    <li class="nav-item">
+                        @if(optional(auth()->user())->role === 'teacher')
+                            <a class="nav-link" href="{{ route('show.admin') }}">{{ __('navbar.admin') }}</a>
+                            <div class="nav-line"></div>
+                        @endif
+                    </li>
 
                     <!-- Authentication Links -->
                     @guest

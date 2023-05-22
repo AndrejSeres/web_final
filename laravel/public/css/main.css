@@ -93,6 +93,10 @@ p {
   text-align-last: center;
 }
 
+.math-fieldClass {
+  min-width: 20rem;
+}
+
 ::-webkit-scrollbar {
   width: 0;
   background: transparent;
