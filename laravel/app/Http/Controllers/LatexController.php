@@ -25,6 +25,9 @@ class LatexController extends Controller
 
     public function saveParsedData()
     {
+     /* Writes out tasks on page -> http://127.0.0.1:8000/parsed-data */
+        $writeOnPage = true;
+ 
         function extractSolution($solution)
         {
 
@@ -46,6 +49,7 @@ class LatexController extends Controller
 
             return null;
         }
+ 
 
         $parsedData = [];
         $latexFilesPath = public_path('/mathExamples/latex');
@@ -77,7 +81,6 @@ class LatexController extends Controller
 
                     preg_match_all('/\\\\includegraphics\{(.*?)\}/', $latexContent, $matchesImages);
                     $imageFilenames = $matchesImages[1];
-                    var_dump($imageFilenames);
 
                     for ($i = 0; $i < count($sectionNames); $i++) {
                         $description = isset($cleanedDescriptions[$i]) ? trim(str_replace('\\', '', $cleanedDescriptions[$i])) : null;
@@ -99,11 +102,15 @@ class LatexController extends Controller
                         }
 
                         $existingTask = Task::where('name', $task['name'])
-                            ->where('setId', $task['setId'])
+                            ->where('id', $task['setId'])
                             ->first();
 
                         if (!$existingTask) {
                             $task->save();
+                            if($writeOnPage){
+                                echo $task;
+                                echo "\n\n";
+                            }
                         }
 
                     }
@@ -164,11 +171,15 @@ class LatexController extends Controller
                         }
 
                         $existingTask = Task::where('name', $task['name'])
-                            ->where('setId', $task['setId'])
+                            ->where('id', $task['setId'])
                             ->first();
 
                         if (!$existingTask) {
                             $task->save();
+                            if($writeOnPage){
+                                echo $task;
+                                echo "\n\n";
+                            }
                         }
 
                     }
