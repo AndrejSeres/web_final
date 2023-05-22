@@ -32,8 +32,6 @@ RUN npm run build
 
 RUN php artisan key:generate
 
-# RUN php artisan migrate
+RUN php artisan migrate
 
-# EXPOSE 8001
-
-# CMD ["php", "artisan", "serve", "--port=8001"]
+CMD ["php", "artisan", "serve", "--port=8000"]
