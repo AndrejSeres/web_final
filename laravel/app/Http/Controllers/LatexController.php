@@ -7,7 +7,8 @@ use App\Models\UserTask;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Storage;
 class LatexController extends Controller
 {
 
@@ -24,8 +25,31 @@ class LatexController extends Controller
 
     public function saveParsedData()
     {
-        /* Writes out tasks on page -> http://127.0.0.1:8000/parsed-data */
+     /* Writes out tasks on page -> http://127.0.0.1:8000/parsed-data */
         $writeOnPage = true;
+ 
+        function extractSolution($solution)
+        {
+
+            $equalSignCount = substr_count($solution, '=');
+            if ($equalSignCount !== 2) {
+                $extractedSolution = str_replace(' ', '', $solution);
+                return $extractedSolution;
+            }
+
+
+            if (preg_match('/^(.*?=.*?)=/', $solution, $matches)) {
+                $extractedSolution = trim($matches[1]);
+
+
+                $extractedSolution = str_replace(' ', '', $extractedSolution);
+
+                return $extractedSolution;
+            }
+
+            return null;
+        }
+ 
 
         $parsedData = [];
         $latexFilesPath = public_path('/mathExamples/latex');
@@ -113,7 +137,7 @@ class LatexController extends Controller
                     $cleanedDescriptions = array_map(function ($content) {
                         $content = preg_replace('/\\\\begin\{equation\*\}(.*?)\\\\end\{equation\*\}/s', '', $content);
                         $content = str_replace('\\', '', $content);
-                        $content = preg_replace('/(\$)/', '$${1}', $content); // Add "$$" around "$" symbols
+                        $content = preg_replace('/(\$)/', '$${1}', $content);
                         return trim($content);
                     }, $taskContents);
 
@@ -131,7 +155,7 @@ class LatexController extends Controller
                             'name' => $sectionNames[$i],
                             'formula' => isset($formulas[$formulaIndex]) ? '$$' . $formulas[$formulaIndex] . '$$' : null,
                             'description' => $cleanedDescriptions[$i] ?? null,
-                            'solution' => $formulas[$solutionIndex] ?? null,
+                            'solution' => extractSolution($formulas[$solutionIndex]),
                             'points' => '5',
                             'setId' => $setId
                         ]);
@@ -170,6 +194,7 @@ class LatexController extends Controller
 
 
 
+
     public function generateTasks()
     {
         $user = Auth::user();
@@ -180,6 +205,17 @@ class LatexController extends Controller
             ->toArray();
 
         $tasks = Task::whereNotIn('id', $generatedTasks)
+            ->where('open', 1)
+            ->where(function ($query) {
+                $query->where(function ($query) {
+                    $query->whereNull('date_from')
+                        ->orWhere('date_from', '<=', Carbon::today());
+                })
+                    ->where(function ($query) {
+                        $query->whereNull('date_to')
+                            ->orWhere('date_to', '>=', Carbon::today());
+                    });
+            })
             ->inRandomOrder()
             ->limit(1)
             ->get();
@@ -202,6 +238,30 @@ class LatexController extends Controller
 
         return response()->json($tasks);
     }
+
+
+
+
+    public function uploadFile(Request $request)
+    {
+        if ($request->hasFile('file')) {
+            $file = $request->file('file');
+
+            $directory = 'mathExamples/latex';
+            $filename = $file->getClientOriginalName(); // Get the original file name
+
+            $filePath = $directory . '/' . $filename;
+
+            Storage::disk('public')->put($filePath, $file->getContent());
+
+            $cleanFilePath = json_encode($filePath, JSON_UNESCAPED_SLASHES);
+
+            return response()->json(['message' => 'File uploaded successfully', 'file_path' => $cleanFilePath]);
+        }
+
+        return response()->json(['message' => 'No file uploaded'], 400);
+    }
+
 
 
 }

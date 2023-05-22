@@ -34,15 +34,27 @@
                                 {{ __('home.current-user') }} {{ auth()->user()->name }}
                             </div>
 
+                            <div id="table-container" class="mt-3"></div>
                             @if (auth()->user()->role === 'teacher')
-                                <div>
-                                    Teacher options
-                                    <button id="show-students-button" class="btn btn-primary">{{ __('home.show-btn') }}</button>
-                                    <div id="table-container" class="mt-3"></div>
+                                <div id="table-container-all-students">
+                                    <table id="students-table" class="table">
+                                        <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Name</th>
+                                            <th>Email</th>
+                                            <th>Generated Tasks</th>
+                                            <th>Delivered Tasks</th>
+                                            <th>Points</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                    </table>
                                 </div>
                             @else
                                 <div>
-                                    <button id="generate-tasks-button" class="btn btn-primary">{{ __('home.generate') }}</button>
+                                    <button id="generate-tasks-button"
+                                            class="btn btn-primary">{{ __('home.generate') }}</button>
                                 </div>
                                 <div id="task-container" class="mt-3"></div>
                             @endif
@@ -53,17 +65,11 @@
         </div>
     </div>
 
+    <script>
 
-<script>
-        // JavaScript code to handle the task generation and display
-
-        // Get the generate tasks button
         const generateTasksButton = document.getElementById('generate-tasks-button');
-
-        // Get the task container
         const taskContainer = document.getElementById('task-container');
 
-        // Generate and display tasks when the button is clicked
         generateTasksButton.addEventListener('click', () => {
             // Make an AJAX request to fetch the tasks
             fetch('/generate-tasks')
@@ -94,15 +100,15 @@
                         ` : ''}
                         <div class="form-group">
                             <label for="solution_${task.id}">{{ __('home.solution') }}</label>
-                            <input type="text" class="form-control" id="solution_${task.id}">
+                            <span id="math-field" class="math-fieldClass"></span>
                         </div>
                         <div class="form-group">
                             <label>{{ __('home.points') }}${task.points}</label>
                         </div>
+						<div class="form-group">
+                    <button id="submitBtn_${task.id}" class="btn btn-primary" onclick="submitSolution(${task.id})">Submit Solution</button>
+                </div>
                     `;
-
-
-
 
                         // Append the card body to the task card
                         taskCard.appendChild(cardBody);
@@ -110,6 +116,24 @@
                         // Append the task card to the task container
                         taskContainer.appendChild(taskCard);
                     });
+
+                    var mathFieldSpan = document.getElementById('math-field');
+                    var latexContent;
+
+                    var MQ = MathQuill.getInterface(2); // for backcompat
+                    var mathField = MQ.MathField(mathFieldSpan, {
+                        spaceBehavesLikeTab: true, // configurable
+                        handlers: {
+                            edit: function() { // useful event handlers
+                                latexContent = mathField.latex(); // simple API
+                                console.log(latexContent);
+                                mathFieldSpan.dataset.latexContent = latexContent;
+                            }
+                        }
+                    });
+
+                    //OUTPUT Latex file is in the variable latexContent
+                    console.log(mathFieldSpan.dataset.latexContent);
 
                     // Render MathJax to display LaTeX formulas
                     MathJax.typeset()
@@ -124,74 +148,138 @@
                     console.error('Error fetching tasks:', error);
                 });
         });
+
+
+        function submitSolution(taskId) {
+            const mathFieldSpan = document.getElementById(`math-field`);
+            const latexContent = mathFieldSpan.dataset.latexContent; // Retrieve the stored LaTeX content
+
+            const csrfToken = window.csrfToken;
+            console.log(latexContent);
+            fetch('/compare-solution', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken,
+                },
+                body: JSON.stringify({ taskId, latexSolution: latexContent }),
+            })
+                .then(response => response.json())
+                .then(data => {
+                    // Assuming the server responds with the result and points
+                    const { result, points } = data;
+                    console.log(result);
+                    $.ajax('/update-user-task', {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': csrfToken,
+                        },
+                        data: { taskId, result, points, userSolution: latexContent },
+                        success: function (response) {
+                            // Update the UI or perform any necessary actions on success
+                            console.log('User task updated successfully!');
+                            Swal.fire({
+                                icon: 'success',
+                                title: '{{ __("home.success") }}',
+                                text: '{{ __("home.success_msg") }}',
+                            }).then(() => {
+                                location.reload(); // Refresh the page
+                            });
+                        },
+                        error: function (error) {
+                            // Handle error scenario
+                            console.error('Error updating user task:', error);
+                            Swal.fire({
+                                icon: 'error',
+                                title: '{{ __("home.error") }}',
+                                text: '{{ __("home.error_msg") }}',
+                            }).then(() => {
+                                location.reload(); // Refresh the page
+                            });s
+
+                        },
+                    });
+                })
+                .catch(error => {
+                    console.log(taskId + " " + latexSolution);
+                    console.error('Error submitting solution:', error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: '{{ __("home.error") }}',
+                        text: '{{ __("home.error_msg") }}',
+                    }).then(() => {
+                        location.reload(); // Refresh the page
+                    });
+                });
+        }
+
+
     </script>
 
     <script>
-    // JavaScript to show all students to the teacher
+        // JavaScript to show all students to the teacher
 
-    // Function to display the students in the table
-    function displayStudents(students) {
-        // Get the table container element
-        const tableContainer = document.getElementById('table-container');
+        // Function to display the students in the table
+        function displayStudents(students) {
+            // Get the table container element
+            const tableContainer = document.getElementById('table-container');
 
-        // Create the table element
-        const table = document.createElement('table');
-        table.classList.add('table');
+            // Create the table element
+            const table = document.createElement('table');
+            table.classList.add('table');
 
-        // Create the table body
-        const tableBody = document.createElement('tbody');
+            // Create the table body
+            const tableBody = document.createElement('tbody');
 
-        // Loop through the students and create table rows
-        students.forEach(student => {
-            // Create a table row
-            const row = document.createElement('tr');
+            // Loop through the students and create table rows
+            students.forEach(student => {
+                // Create a table row
+                const row = document.createElement('tr');
 
-            // Create table cells for id, name, and email
-            const idCell = document.createElement('td');
-            idCell.textContent = student.id;
+                // Create table cells for id, name, and email
+                const idCell = document.createElement('td');
+                idCell.textContent = student.id;
 
-            const nameCell = document.createElement('td');
-            nameCell.textContent = student.name;
+                const nameCell = document.createElement('td');
+                nameCell.textContent = student.name;
 
-            const emailCell = document.createElement('td');
-            emailCell.textContent = student.email;
+                const emailCell = document.createElement('td');
+                emailCell.textContent = student.email;
 
-            // Append the cells to the row
-            row.appendChild(idCell);
-            row.appendChild(nameCell);
-            row.appendChild(emailCell);
+                // Append the cells to the row
+                row.appendChild(idCell);
+                row.appendChild(nameCell);
+                row.appendChild(emailCell);
 
-            // Append the row to the table body
-            tableBody.appendChild(row);
-        });
-
-        // Append the table body to the table
-        table.appendChild(tableBody);
-
-        // Clear the table container
-        tableContainer.innerHTML = '';
-
-        // Append the table to the table container
-        tableContainer.appendChild(table);
-    }
-
-    // Get the show table button and attach the click event listener
-    const showStudentsButton = document.getElementById('show-students-button');
-    showStudentsButton.addEventListener('click', () => {
-        // Make an AJAX request to fetch the students
-        fetch('/show-students')
-            .then(response => response.json())
-            .then(students => {
-                // Call the function to display the students in the table
-                displayStudents(students);
-            })
-            .catch(error => {
-                console.error('Error fetching students:', error);
+                // Append the row to the table body
+                tableBody.appendChild(row);
             });
-    });
-</script>
 
+            // Append the table body to the table
+            table.appendChild(tableBody);
 
+            // Clear the table container
+            tableContainer.innerHTML = '';
 
+            // Append the table to the table container
+            tableContainer.appendChild(table);
+        }
+
+        // Get the show table button and attach the click event listener
+        const showStudentsButton = document.getElementById('show-students-button');
+        showStudentsButton.addEventListener('click', () => {
+            // Make an AJAX request to fetch the students
+            fetch('/show-students')
+                .then(response => response.json())
+                .then(students => {
+                    // Call the function to display the students in the table
+                    displayStudents(students);
+                })
+                .catch(error => {
+                    console.error('Error fetching students:', error);
+                });
+        });
+    </script>
 
 @endsection
+

@@ -17,6 +17,9 @@ return new class extends Migration
             $table->text("image")->nullable();
             $table->text("points")->nullable();
             $table->integer("setId")->nullable();
+            $table->boolean('open')->default(true);
+            $table->date('date_from')->nullable();
+            $table->date('date_to')->nullable();
             $table->timestamps();
         });
     }

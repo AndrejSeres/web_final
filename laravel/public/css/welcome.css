@@ -1,0 +1,26 @@
+div {
+  font-size: large;
+  /* margin: 1rem; */
+}
+
+h2 {
+  font-size: 25px;
+}
+
+.pdfButtonDiv {
+  margin-top: 4rem;
+}
+
+#more {
+  background-color: lightblue;
+  border-color: rgb(91, 141, 158);
+  color: vlack;
+  font-weight: bold;
+  padding: 10px 20px; 
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+#more:hover {
+  background-color: #add5ff;
+}
