@@ -53,6 +53,6 @@ In case that one of the containers is not running, you can try this command. Con
     - Laravel development server (listening on port 8000)
 
 - MyPhpAdmin running and accessed on port 8080
-- One problem persist: Project APP is running at port :8000 inside project and also this port is exposed to localhost, but eventualy you are not able to see app runing outside the container from your localhost. We couldn't figure it out, if it's a firewall issue or what could be causing this problem
+- One problem persist: Project APP is running at port :8000 inside project and also this port is exposed to localhost, but eventually you are not able to see app runing outside the container from your localhost. We couldn't figure it out, if it's a firewall issue or what could be causing this problem
 
 
